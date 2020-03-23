@@ -1,15 +1,36 @@
 from array import array
+class Iterator: #additional class for __iter__()
+    def __init__(self, collection):
+        self.cursor = -1
+        self._collection = collection
+    def __next__(self,default=None):
+        if self.cursor + 1 >= len(self._collection):
+            self.cursor = -1
+            raise StopIteration
+        self.cursor +=1
+        return self._collection[self.cursor]
+
 types_dict = {int: 'i', str: 'u', float: 'd'} #matching dict
 class ArrayList:
-    def __init__(self,typecode,initializer=()):
-        datatype = types_dict[typecode]
+    def __init__(self,datatype,initializer=()):
+        typecode = types_dict[datatype]
         for x in initializer:
-            if type(x) != typecode:
+            if type(x) != datatype:
                 raise Exception("Wrong initializer datatype") #fixed
-        self._arr = array(datatype, initializer)
+        self._arr = array(typecode, initializer)
+        self._iterator = Iterator(self._arr)
 
-    def __getitem__(self, key):
-        return self._arr[key]
+    def __getitem__(self, key): #fixed (slice added) - working only for int type
+        cls = type(self)
+        if isinstance(key,slice):
+            return cls(int,self._arr[key])
+        elif isinstance(key,int):
+            return self._arr[key]
+        else:
+            raise IndexError
+
+    def __repr__(self):
+        return f"{self._arr}"
 
     def __len__(self):
         return self._arr.buffer_info()[1] # buffer_info return a tuple (address, length)
@@ -20,8 +41,9 @@ class ArrayList:
                 return True
 
     def __iter__(self):
-        for i in range(self._arr.buffer_info()[1]):
-            yield self._arr[i]
+        return self._iterator
+        # for i in range(self._arr.buffer_info()[1]):
+        #     yield self._arr[i]
 
     def __reversed__(self):
         return self._arr[::-1]
@@ -45,6 +67,7 @@ print('int tests: ')
 print()
 a = ArrayList(int, (1,4,5,4,3,5,64,43,6))
 
+print('slice test: ', a[0:3])
 print('getitem test: ', a.__getitem__(3))
 print('len test: ', a.__len__())
 print('contains test: ', a.__contains__(64))
@@ -91,3 +114,8 @@ print('reversed test: ')
 print(a2.__reversed__())
 print('index test: ',a2.__index__(1.1))
 print('count test: ',a2.__count__(1.4))
+
+
+
+
+
