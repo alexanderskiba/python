@@ -23,10 +23,15 @@ class Truck(CarBase):
         super().__init__(brand, photo_file_name, carrying)
         self.car_type = 'truck'
         self.body_whl = body_whl
-        new_whl_list = self.body_whl.split('x')
-        self.body_width = float(new_whl_list[1])
-        self.body_height = float(new_whl_list[2])
-        self.body_length = float(new_whl_list[0])
+        try:
+            new_whl_list = self.body_whl.split('x',2)
+            self.body_width = float(new_whl_list[1])
+            self.body_height = float(new_whl_list[2])
+            self.body_length = float(new_whl_list[0])
+        except:
+            self.body_width = 0.0
+            self.body_height = 0.0
+            self.body_length = 0.0
     def get_body_volume(self):
         result = self.body_width * self.body_height * self.body_length
         return result
@@ -39,8 +44,12 @@ class SpecMachine(CarBase):
         self.extra = extra
 
 def create_object(klasse):
-    x = klasse
-    return x
+    if klasse.get_photo_file_ext() not in ['.jpg', '.jpeg', '.png', '.gif',]:
+        return ''
+    else:
+        x = klasse
+
+        return x
 
 def get_car_list(csv_filename):
     try:
@@ -68,6 +77,8 @@ def get_car_list(csv_filename):
                         # print(create_object(SpecMachine))
     except IndexError:
         pass
-    return car_list
-# print (get_car_list('test_table.csv'))
-print (get_car_list('test_table.csv')[0].get_body_volume()) #обращаемся к атрибуту passenger_seats_count
+    if car_list == ['']:
+        return []
+    else:
+        return car_list
+# print (get_car_list('cars_week3.csv'))
