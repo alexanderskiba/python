@@ -1,28 +1,48 @@
 import asyncio
+import re
 
 
 class ClientServerProtocol(asyncio.Protocol):
     def connection_made(self, transport):
         self.transport = transport
 
+    #метод работающий при приеме данных
     def data_received(self, data):
-        resp = process_data(data.decode())
+        resp = data.decode().rstrip('\n')
+        #сначала метод put
+        storage = dict()
+        if 'put' in resp:
+            kek = resp.split(' ')  # делаем список разделяя по пробелу
+            key = kek[1]
+            value = (kek[2],kek[3])
+            if key not in storage:
+                storage[key] = list()
+            storage[key].append(value)
+            print(kek)
+            print(storage)
+
         self.transport.write(resp.encode())
 
 
-loop = asyncio.get_event_loop()
-coro = loop.create_server(
-    ClientServerProtocol,
-    '127.0.0.1', 8181
-)
+def run_server(host, port):
 
-server = loop.run_until_complete(coro)
+    loop = asyncio.get_event_loop()
+    coro = loop.create_server(
+        ClientServerProtocol,
+        host, port
+    )
 
-try:
-    loop.run_forever()
-except KeyboardInterrupt:
-    pass
+    server = loop.run_until_complete(coro)
+    print('Сервер запущен')
 
-server.close()
-loop.run_until_complete(server.wait_closed())
-loop.close()
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
+
+    server.close()
+    loop.run_until_complete(server.wait_closed())
+    loop.close()
+
+
+run_server('127.0.0.1', 8888)
