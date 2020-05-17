@@ -14,12 +14,14 @@ class ClientServerProtocol(asyncio.Protocol):
         if 'put' in resp:
             kek = resp.split(' ')  # делаем список разделяя по пробелу
             key = kek[1]
-            value = (kek[2],kek[3])
-            if key not in storage:
-                storage[key] = list()
-            storage[key].append(value)
-            print(kek)
-            print(storage)
+            value = (float(kek[2]),int(kek[3]))
+
+            if key in kek:
+                if key not in storage:
+                    storage[key] = list()
+                storage[key].append(value)
+                # print(kek)
+                print(storage)
 
         self.transport.write(resp.encode())
 
