@@ -22,7 +22,6 @@ with socket.socket() as sock:
 
                     if key in kek:
                         if key not in storage:
-                            print('if')
                             storage[key] = list()
                         storage[key].append(value)
                         # print(kek)
