@@ -1,8 +1,11 @@
 import asyncio
-import re
+
 
 
 class ClientServerProtocol(asyncio.Protocol):
+    def __init__(self):
+        self.storage = dict()
+
     def connection_made(self, transport):
         self.transport = transport
 
@@ -10,18 +13,17 @@ class ClientServerProtocol(asyncio.Protocol):
     def data_received(self, data):
         resp = data.decode().rstrip('\n')
         #сначала метод put
-        storage = dict()
         if 'put' in resp:
             kek = resp.split(' ')  # делаем список разделяя по пробелу
             key = kek[1]
             value = (float(kek[2]),int(kek[3]))
 
             if key in kek:
-                if key not in storage:
-                    storage[key] = list()
-                storage[key].append(value)
+                if key not in self.storage:
+                    self.storage[key] = list()
+                self.storage[key].append(value)
                 # print(kek)
-                print(storage)
+                print(self.storage)
 
         self.transport.write(resp.encode())
 
