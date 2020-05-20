@@ -25,15 +25,24 @@ class ClientServerProtocol(asyncio.Protocol):
                 # print(kek)
                 #отправить ответ вместо print
                 # отвечаем клиенту ok\n\n
-                self.transport.write(''.encode())
+                self.transport.write('ok\n\n'.encode())
                 print(self.storage)
         # метод, отправляющий клиенту значение требуемого ключа
         # get palm.cpu\n - запрос клиента
         # ok\npalm.cpu 2.0 1150864248\n
-        # if 'get' in resp:
+        if 'get' in resp:
+            kek = resp.split(' ')  # делаем список разделяя по пробелу
+            key = kek[1] # ключ словаря
+            # Теперь из словаря self.storage нужно достать значение и передать в формате:
+            # ok\npalm.cpu 2.0 1150864248\n
+            # возможно необходимо будет добавить условие на существование ключав словаре
+            answer = f'ok\n{key} {self.storage[key]} '
+            # get test_key
+            # < ok
+            # < test_key 13.0 1503319739 выдать в формате ключ - первый кортеж из списка,
+            # < test_key 12.0 1503319740 потом ключ - второй кортеж из списка и тд(проитерироваться по списку)
+            self.transport.write(answer.encode())
 
-
-        self.transport.write(resp.encode())
 
 
 def run_server(host, port):
