@@ -11,4 +11,6 @@ with socket.create_connection(("127.0.0.1", 8888)) as sock:
     sock.sendall(f"put {key} {value} {timestamp}\n".encode())
     time.sleep(1)
     sock.sendall(f"put {key1} {value1} {timestamp1}\n".encode())
+    response = sock.recv(1024).decode()
+    print(response)
 #    sock.sendall("Hello".encode("utf8"))
