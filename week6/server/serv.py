@@ -1,10 +1,12 @@
 import asyncio
+import time
 
+dictionary = dict()
 
-# На каждого клиента свое соединение, необходим класс хранилища
+# На каждого клиента свое соединение
 class ClientServerProtocol(asyncio.Protocol):
-    def __init__(self):
-        self.storage = dict()
+    # def __init__(self):
+        # dictionary = dict()
 
     def connection_made(self, transport):
         self.transport = transport
@@ -18,30 +20,32 @@ class ClientServerProtocol(asyncio.Protocol):
             key = kek[1]
             value = (float(kek[2]),int(kek[3]))
 
-            if key not in self.storage:
-                self.storage[key] = list()
-            self.storage[key].append(value)
+            if key not in dictionary:
+                dictionary[key] = list()
+            dictionary[key].append(value)
             # print(kek)
             #отправить ответ вместо print
             # отвечаем клиенту ok\n\n
             self.transport.write('ok\n\n'.encode())
-        print(self.storage)
+            print(dictionary)
         # метод, отправляющий клиенту значение требуемого ключа
         # get palm.cpu\n - запрос клиента
         # ok\npalm.cpu 2.0 1150864248\n
         if 'get' in resp:
-            print(self.storage)
             kek = resp.split(' ')  # делаем список разделяя по пробелу
             key = kek[1] # ключ словаря
-            # Теперь из словаря self.storage нужно достать значение и передать в формате:
+            # Теперь из словаря dictionary нужно достать значение и передать в формате:
             # ok\npalm.cpu 2.0 1150864248\n
             # возможно необходимо будет добавить условие на существование ключа в словаре
-            answer = f'ok\n{key} {self.storage[key]} '
+            for i in dictionary[key]:
+                answer = f'{key} {i[0]} {i[1]}\n'
+                # print(answer)
             # get test_key
             # < ok
             # < test_key 13.0 1503319739 выдать в формате ключ - первый кортеж из списка,
             # < test_key 12.0 1503319740 потом ключ - второй кортеж из списка и тд(проитерироваться по списку)
-            self.transport.write(answer.encode())
+                self.transport.write(('ok\n').encode())
+                self.transport.write((answer).encode())
 
 
 
