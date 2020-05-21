@@ -1,7 +1,7 @@
 import asyncio
 
 
-
+# На каждого клиента свое соединение, необходим класс хранилища
 class ClientServerProtocol(asyncio.Protocol):
     def __init__(self):
         self.storage = dict()
@@ -18,24 +18,24 @@ class ClientServerProtocol(asyncio.Protocol):
             key = kek[1]
             value = (float(kek[2]),int(kek[3]))
 
-            if key in kek:
-                if key not in self.storage:
-                    self.storage[key] = list()
-                self.storage[key].append(value)
-                # print(kek)
-                #отправить ответ вместо print
-                # отвечаем клиенту ok\n\n
-                self.transport.write('ok\n\n'.encode())
-                print(self.storage)
+            if key not in self.storage:
+                self.storage[key] = list()
+            self.storage[key].append(value)
+            # print(kek)
+            #отправить ответ вместо print
+            # отвечаем клиенту ok\n\n
+            self.transport.write('ok\n\n'.encode())
+        print(self.storage)
         # метод, отправляющий клиенту значение требуемого ключа
         # get palm.cpu\n - запрос клиента
         # ok\npalm.cpu 2.0 1150864248\n
         if 'get' in resp:
+            print(self.storage)
             kek = resp.split(' ')  # делаем список разделяя по пробелу
             key = kek[1] # ключ словаря
             # Теперь из словаря self.storage нужно достать значение и передать в формате:
             # ok\npalm.cpu 2.0 1150864248\n
-            # возможно необходимо будет добавить условие на существование ключав словаре
+            # возможно необходимо будет добавить условие на существование ключа в словаре
             answer = f'ok\n{key} {self.storage[key]} '
             # get test_key
             # < ok
