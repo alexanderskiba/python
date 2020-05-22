@@ -37,6 +37,8 @@ class ClientServerProtocol(asyncio.Protocol):
             # Теперь из словаря dictionary нужно достать значение и передать в формате:
             # ok\npalm.cpu 2.0 1150864248\n
             # возможно необходимо будет добавить условие на существование ключа в словаре
+
+            self.transport.write(('ok\n').encode())
             for i in dictionary[key]:
                 answer = f'{key} {i[0]} {i[1]}\n'
                 # print(answer)
@@ -44,8 +46,9 @@ class ClientServerProtocol(asyncio.Protocol):
             # < ok
             # < test_key 13.0 1503319739 выдать в формате ключ - первый кортеж из списка,
             # < test_key 12.0 1503319740 потом ключ - второй кортеж из списка и тд(проитерироваться по списку)
-                self.transport.write(('ok\n').encode())
-                self.transport.write((answer).encode())
+                self.transport.write((answer).encode()) # проблема здесь write пишет только до \n!!!!!
+                #заработало, но непонятно почему
+
 
 
 
