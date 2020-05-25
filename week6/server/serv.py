@@ -15,18 +15,17 @@ class ClientServerProtocol(asyncio.Protocol):
     def data_received(self, data):
         resp = data.decode().rstrip('\n')
         valid = resp.split(' ')
-        if valid[0] == 'get' and valid[1] == '*' and len(dictionary) == 0:
-            self.transport.write('ok\n\n'.encode())
-        elif valid[0] != 'put' or valid[0] != 'get': #интересный прикол
-            # print (valid[0] is 'put') False
+        # print(len(valid))
+        if valid[0] != 'put' and valid[0] != 'get' or len(valid) > 4:
             err = 'error\nwrong command\n\n'
             self.transport.write(err.encode())
-        elif valid[0] == 'get' and valid[1] == '*' and len(dictionary) == 0:
-            self.transport.write('ok\n\n'.encode())
+        # elif valid[0] == 'get' and valid[1] == '*' and len(dictionary) == 0:
+        #     self.transport.write('ok\n\n'.encode())
         else:
             #сначала метод(на стороне клиента) put, сложим данные в словарь
             if 'put' in resp:
                 kek = resp.split(' ')  # делаем список разделяя по пробелу
+                # print (kek)
                 key = kek[1]
                 value = (float(kek[2]),int(kek[3]))
 
