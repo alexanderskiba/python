@@ -2,7 +2,7 @@ import socket
 
 with socket.create_connection(("127.0.0.1", 8888)) as sock:
     key = 'palm.cpu'
-    value = 23.7
+    value = 'aaa'
     timestamp = 1150864247
     key0 = ''
     keyp = ' '

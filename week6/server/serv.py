@@ -15,7 +15,6 @@ class ClientServerProtocol(asyncio.Protocol):
     def data_received(self, data):
         resp = data.decode().rstrip('\n')
         valid = resp.split(' ')
-        # print(len(valid))
         if valid[0] != 'put' and valid[0] != 'get' or len(valid) > 4:
             err = 'error\nwrong command\n\n'
             self.transport.write(err.encode())
@@ -26,20 +25,24 @@ class ClientServerProtocol(asyncio.Protocol):
             if 'put' in resp:
                 kek = resp.split(' ')  # делаем список разделяя по пробелу
                 # print (kek)
-                key = kek[1]
-                value = (float(kek[2]),int(kek[3]))
+                if not isinstance(kek[2], float) and isinstance(kek[3], float):
+                    err = 'error\nwrong command\n\n'
+                    self.transport.write(err.encode())
+                else:
+                    key = kek[1]
+                    value = (float(kek[2]),int(kek[3]))
 
-                if key not in dictionary:
-                    dictionary[key] = list()
-                dictionary[key].append(value)
-                # print(kek)
-                #отправить ответ вместо print
-                # отвечаем клиенту ok\n\n
-                self.transport.write('ok\n\n'.encode())
-                # print(dictionary)
-            # метод, отправляющий клиенту значение требуемого ключа
-            # get palm.cpu\n - запрос клиента
-            # ok\npalm.cpu 2.0 1150864248\n
+                    if key not in dictionary:
+                        dictionary[key] = list()
+                    dictionary[key].append(value)
+                    # print(kek)
+                    #отправить ответ вместо print
+                    # отвечаем клиенту ok\n\n
+                    self.transport.write('ok\n\n'.encode())
+                    # print(dictionary)
+                # метод, отправляющий клиенту значение требуемого ключа
+                # get palm.cpu\n - запрос клиента
+                # ok\npalm.cpu 2.0 1150864248\n
             elif 'get' in resp:
                 if '*' in resp:
                     if len(dictionary) != 0:
